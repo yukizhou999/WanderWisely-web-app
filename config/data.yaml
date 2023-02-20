@@ -1,0 +1,3 @@
+NPS:
+  # API url
+  get_activities_url: "https://developer.nps.gov/api/v1/activities"
