@@ -1,3 +1,9 @@
 NPS:
   # API url
-  get_activities_url: "https://developer.nps.gov/api/v1/activities"
+  API:
+    get_activities_url: "https://developer.nps.gov/api/v1/activities"
+    get_activity_related_park_url: "https://developer.nps.gov/api/v1/activities/parks"
+
+  filename:
+    activities: activity.csv
+    activity_related_parks: activity_related_parks.csv
