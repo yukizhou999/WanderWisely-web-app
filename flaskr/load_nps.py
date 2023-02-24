@@ -9,20 +9,6 @@ import pandas as pd
 from constants import auth_config_path, data_config_path, data_wd
 
 
-# retrieve activities possible in parks
-# url = data_config.NPS['get_activities_url']
-# r = requests.get(url, params=auth_config.NPS)
-# data = json.loads(r.text)
-# activities = pd.DataFrame(data['data'])
-# print(activities)
-
-# retrieve parks related to particular activities
-# url = NPS_api_config.get_activity_related_park_url
-# r = requests.get(url, params=auth_config)
-# data = json.loads(r.text)
-# print(data)
-
-
 class NPSdataRetriever:
     """class for retrieve data through NPS API
 
@@ -80,6 +66,21 @@ class NPSdataRetriever:
         data.to_csv(filepath, index=False)
         print(f"Activity data were retrieved and saved in {filepath}")
         return data
+
+    def get_amenity(self):
+        pass
+
+    def get_amenity_related_parks(self):
+        pass
+
+    def get_campground(self):
+        pass
+
+    def get_places(self):
+        pass
+
+    def get_thingstodo(self):
+        pass
 
 
 if __name__ == '__main__':

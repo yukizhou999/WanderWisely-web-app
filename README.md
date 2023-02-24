@@ -18,3 +18,11 @@
 └───templates
 
 ```
+
+
+### Running instructions:
+Create auth.yaml file in the config folder with contents as below:
+```commandline
+NPS:
+  api_key: xxxxxxxxxxxxxxxx
+```
