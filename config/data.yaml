@@ -4,8 +4,10 @@ NPS:
     get_activities_url: "https://developer.nps.gov/api/v1/activities"
     get_activity_related_park_url: "https://developer.nps.gov/api/v1/activities/parks"
     get_places_url: "https://developer.nps.gov/api/v1/places"
+    get_campground_url: "https://developer.nps.gov/api/v1/campgrounds"
   # filename
   filename:
     activities: activity.csv
     activity_related_parks: activity_related_parks.csv
     park_related_places: park_related_places.csv
+    campground: campground.csv

@@ -51,16 +51,16 @@ class NPSdataRetriever:
         data_list = []
         for activity in raw_data:
             for park in activity['parks']:
-                data_dict = {}
-                data_dict['id'] = activity['id']
-                data_dict['name'] = activity['name']
-                data_dict['designation'] = park['designation']
-                data_dict['state'] = park['states']
-                data_dict['parkCode'] = park['parkCode']
-                data_dict['parkName'] = park['fullName']
+                data_dict = {'id'         : activity['id'],
+                             'name'       : activity['name'],
+                             'designation': park['designation'],
+                             'state'      : park['states'],
+                             'parkCode'   : park['parkCode'],
+                             'parkName'   : park['fullName']
+                             }
                 data_list.append(data_dict)
         data = pd.DataFrame(data_list)
-        national_park_data = data[data['designation']=='National Park'].copy()
+        national_park_data = data[data['designation'] == 'National Park'].copy()
         print(national_park_data.shape)
         print(national_park_data.head())
         filepath = data_wd + self.filename_config.activity_related_parks
@@ -75,7 +75,53 @@ class NPSdataRetriever:
         pass
 
     def get_campground(self):
-        pass
+        """
+
+        :return:
+        """
+        url = self.api_config.get_campground_url
+        park = pd.read_csv(data_wd + self.filename_config.activity_related_parks)
+        parkcode = park['parkCode'].unique().tolist()
+        data_list = []
+        for code in parkcode:
+            params = self.auth
+            params['parkCode'] = code
+            params['limit'] = 50
+            r = requests.get(url, params=params)
+            response = json.loads(r.text)
+            if int(response['total']) > int(response['limit']):
+                print(f"The number of response ({int(response['total'])}) exceeds the default limit 50")
+                params.update({'limit': int(response['total'])})
+                r = requests.get(url, params=params)
+            raw_data = json.loads(r.text)['data']
+            for campground in raw_data:
+                data_dict = {'id':              campground['id'],
+                             'name':            campground['name'],
+                             'parkCode':        code,
+                             'lat':             campground['latitude'],
+                             'lon':             campground['longitude'],
+                             'campground_url':  campground['url'],
+                             'reservation_url': campground['reservationUrl'],
+                             'info':            campground['description']
+                             }
+                if len(campground['addresses']) > 0:
+                    add = campground['addresses'][0]
+                    data_dict['address'] = add['line1'] + ' ' \
+                                           + add['line2'] + ' ' \
+                                           + add['line3'] + ' ' \
+                                           + add['city'] + ' ' \
+                                           + add['stateCode'] + ' ' \
+                                           + add['postalCode']
+                else:
+                    data_dict['address'] = ''
+                data_list.append(data_dict)
+        data = pd.DataFrame(data_list)
+        print(data.shape)
+        print(data.head())
+        filepath = data_wd + self.filename_config.campground
+        data.to_csv(filepath, index=False)
+        print(f"Park-related place data were retrieved and saved in {filepath}")
+        return data
 
     def get_places(self):
         """
@@ -85,30 +131,30 @@ class NPSdataRetriever:
         url = self.api_config.get_places_url
         park = pd.read_csv(data_wd + self.filename_config.activity_related_parks)
         parkcode = park['parkCode'].unique().tolist()
-        data_list=[]
+        data_list = []
         for code in parkcode:
             params = self.auth
             params['parkCode'] = code
             params['limit'] = 50
             r = requests.get(url, params=params)
             response = json.loads(r.text)
-            if int(response['total'])>int(response['limit']):
+            if int(response['total']) > int(response['limit']):
                 print(f"The number of response ({int(response['total'])}) exceeds the default limit 50")
                 params.update({'limit': int(response['total'])})
                 r = requests.get(url, params=params)
             raw_data = json.loads(r.text)['data']
             for place in raw_data:
                 if place['isOpenToPublic'] == '1':
-                    data_dict={}
-                    data_dict['id'] = place['id']
-                    data_dict['place_title'] = place['title']
-                    data_dict['parkCode'] = code
-                    data_dict['lat'] = place['latitude']
-                    data_dict['lon'] = place['longitude']
-                    data_dict['place_url'] = place['url']
-                    data_dict['image_url'] = place['images'][0]['url']
-                    data_dict['tags'] = place['tags']
-                    data_dict['info'] = place['listingDescription']
+                    data_dict = {'id'         : place['id'],
+                                 'place_title': place['title'],
+                                 'parkCode'   : code,
+                                 'lat'        : place['latitude'],
+                                 'lon'        : place['longitude'],
+                                 'place_url'  : place['url'],
+                                 'image_url'  : place['images'][0]['url'],
+                                 'tags'       : place['tags'],
+                                 'info'       : place['listingDescription']
+                                 }
                     data_list.append(data_dict)
                 else:
                     continue
@@ -120,11 +166,6 @@ class NPSdataRetriever:
         print(f"Park-related place data were retrieved and saved in {filepath}")
         return data
 
-
-
-
-
-
     def get_thingstodo(self):
         pass
 
@@ -133,4 +174,4 @@ if __name__ == '__main__':
     auth = uf.load_yaml(auth_config_path).NPS
     nps_data_config = uf.ConfigClass(uf.load_yaml(data_config_path).NPS)
     nps_data_retriever = NPSdataRetriever(auth, nps_data_config)
-    data = nps_data_retriever.get_places()
+    data = nps_data_retriever.get_campground()
