@@ -60,11 +60,12 @@ class NPSdataRetriever:
                 data_dict['parkName'] = park['fullName']
                 data_list.append(data_dict)
         data = pd.DataFrame(data_list)
-        print(data.shape)
-        print(data.head())
+        national_park_data = data[data['designation']=='National Park'].copy()
+        print(national_park_data.shape)
+        print(national_park_data.head())
         filepath = data_wd + self.filename_config.activity_related_parks
-        data.to_csv(filepath, index=False)
-        print(f"Activity data were retrieved and saved in {filepath}")
+        national_park_data.to_csv(filepath, index=False)
+        print(f"Activity-related park data were retrieved and saved in {filepath}")
         return data
 
     def get_amenity(self):
@@ -77,7 +78,52 @@ class NPSdataRetriever:
         pass
 
     def get_places(self):
-        pass
+        """
+
+        :return:
+        """
+        url = self.api_config.get_places_url
+        park = pd.read_csv(data_wd + self.filename_config.activity_related_parks)
+        parkcode = park['parkCode'].unique().tolist()
+        data_list=[]
+        for code in parkcode:
+            params = self.auth
+            params['parkCode'] = code
+            params['limit'] = 50
+            r = requests.get(url, params=params)
+            response = json.loads(r.text)
+            if int(response['total'])>int(response['limit']):
+                print(f"The number of response ({int(response['total'])}) exceeds the default limit 50")
+                params.update({'limit': int(response['total'])})
+                r = requests.get(url, params=params)
+            raw_data = json.loads(r.text)['data']
+            for place in raw_data:
+                if place['isOpenToPublic'] == '1':
+                    data_dict={}
+                    data_dict['id'] = place['id']
+                    data_dict['place_title'] = place['title']
+                    data_dict['parkCode'] = code
+                    data_dict['lat'] = place['latitude']
+                    data_dict['lon'] = place['longitude']
+                    data_dict['place_url'] = place['url']
+                    data_dict['image_url'] = place['images'][0]['url']
+                    data_dict['tags'] = place['tags']
+                    data_dict['info'] = place['listingDescription']
+                    data_list.append(data_dict)
+                else:
+                    continue
+        data = pd.DataFrame(data_list)
+        print(data.shape)
+        print(data.head())
+        filepath = data_wd + self.filename_config.park_related_places
+        data.to_csv(filepath, index=False)
+        print(f"Park-related place data were retrieved and saved in {filepath}")
+        return data
+
+
+
+
+
 
     def get_thingstodo(self):
         pass
@@ -87,4 +133,4 @@ if __name__ == '__main__':
     auth = uf.load_yaml(auth_config_path).NPS
     nps_data_config = uf.ConfigClass(uf.load_yaml(data_config_path).NPS)
     nps_data_retriever = NPSdataRetriever(auth, nps_data_config)
-    nps_data_retriever.get_activity_related_parks()
+    data = nps_data_retriever.get_places()
