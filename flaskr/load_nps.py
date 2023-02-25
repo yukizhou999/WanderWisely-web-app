@@ -3,7 +3,6 @@ import helper_functions as uf
 import requests
 import json
 from flatten_json import flatten
-from pandas import json_normalize
 import pandas as pd
 
 from constants import auth_config_path, data_config_path, data_wd
