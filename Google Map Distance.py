@@ -1,38 +1,42 @@
 import pandas as pd
-import googlemaps
 from itertools import tee
+import googlemaps
+from datetime import datetime
+from collections import defaultdict
+import math
 
-df = pd.read_csv('park_related_places.csv')
 
 API_key = 'AIzaSyB4MUlPIwoZ8SdwZD-XfxRvyW1c_wm0Sy8'#enter Google Maps API key
 gmaps = googlemaps.Client(key=API_key)
 
-def pairwise(iterable):
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
+df = pd.read_csv('park_related_places.csv',usecols = ['id','place_title','lat','lon'])
 
-#empty list - will be used to store calculated distances
-list = [0]
 
-# Loop through each row in the data frame using pairwise
-for (i1, row1), (i2, row2) in pairwise(df.iterrows()):
-      #Assign latitude and longitude as origin/departure points
-      LatOrigin = row1['Latitude'] 
-      LongOrigin = row1['Longitude']
-      origins = (LatOrigin,LongOrigin)
+place_id_dict=defaultdict()
+lat_lon_dict=defaultdict(dict)
 
-      #Assign latitude and longitude from the next row as the destination point
-      LatDest = row2['Latitude']   # Save value as lat
-      LongDest = row2['Longitude'] # Save value as lat
-      destination = (LatDest,LongDest)
+for ind,row in df.iterrows():
+    if math.isnan(row['lat']) or math.isnan(row['lon']):
+        place=gmaps.find_place(row['place_title'], input_type= "textquery")
+        place_id=place['candidates'][0]['place_id'] if place['candidates'] !=[] else None
+        lat_0=gmaps.place(place_id) if place_id !=None else None
+        lat=lat_0['result']['geometry']['location']['lat'] if lat_0 !=None else None
+        lon_0=gmaps.place(place_id) if place_id !=None else None
+        lon=lon_0['result']['geometry']['location']['lng'] if lon_0 !=None else None
+        
+        
+    else: 
+        place=gmaps.reverse_geocode((row['lat'],row['lon']))
+        place_id=place[0]['place_id'] if place !=[] else None
+        lat=row['lat']
+        lon=row['lon']
+        
+    place_id_dict[row['id']]=place_id
+    lat_lon_dict[row['id']]={'lat':lat,'lon':lon}
+    
+df_place_id=pd.DataFrame(place_id_dict.items(), columns=['id', 'place_id'])
+df_lat_lon= pd.DataFrame.from_dict(lat_lon_dict, orient="index").reset_index()
 
-      #pass origin and destination variables to distance_matrix function# output in meters
-      result = gmaps.distance_matrix(origins, destination, mode='walking')["rows"][0]["elements"][0]["distance"]["value"]
-      
-      #append result to list
-      list.append(result)
-      
-      #Add column 'Distance' to data frame and assign to list values
-      df['Distance'] = list
-      df.to_csv('calculated_distances.csv', sep=';', index=None, header= ['id','Latitude','Longitude','track_id','time','distance'])
+df_final=pd.merge(df_place_id, df_lat_lon, how='inner', left_on = 'id', right_on = 'index')
+df_final=df_final.drop(columns=['index'])
+df_final.to_csv('calculated_distances.csv', sep=';', index=None)  
