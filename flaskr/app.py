@@ -14,8 +14,10 @@ amenities = uf.import_data("select * from wanderwisely.amenity_related_parks", c
 amenities = amenities["name"].unique()
 # load data to map parkCode to parkName
 parks_df = uf.import_data(f"select * from wanderwisely.activity_related_parks", conn)
+
+
 # record user's selection
-user_selection = {"activities": [], "amenities": [], "pois": []}
+user_selection = {"activities": [], "amenities": [], "parkName": [], "pois": []}
 
 
 def update_selection(selection, select_type):
@@ -41,7 +43,6 @@ def record_button():
 
     return '', 204
 
-
 @app.route('/parks')
 def parks():
     top_three_parks = algo(user_selection)
@@ -49,19 +50,21 @@ def parks():
 
 
 def generate_places(parkName, activities):
-    parkCode = parks_df[parks_df['parkName'] == parkName]['parkCode'][0]
+    parkCode = parks_df[parks_df['parkName'] == parkName]['parkCode'].tolist()[0]
+    activities = "','".join(activities)
     query = f"select thing_title from wanderwisely.things_to_do_places where parkCode = '{parkCode}' and activity_name in ('{activities}')"
     places_df = uf.import_data(query, conn)
     filtered_places = places_df['thing_title'].to_list()
-    return parkName, filtered_places
+    return filtered_places
 
 
 @app.route('/poi')
 def poi():
     parkName = user_selection['parkName']
     activities = user_selection['activities']
-    # parkName, places = generate_places(parkName, activities)
-    parkName, places = generate_places('acad', ['Biking', 'Hiking'])
+    places = generate_places(parkName, activities)
+    # parkName = 'Yosemite National Park'
+    # places = generate_places('Yosemite National Park', ['Hiking', 'Biking', 'Astronomy', 'Boating'])
     return render_template('poi.html', parkName=parkName, places=places)
 
 
@@ -78,4 +81,5 @@ def contact():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
