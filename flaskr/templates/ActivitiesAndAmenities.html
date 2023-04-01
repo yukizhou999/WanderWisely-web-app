@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
-      <title>Services</title>
+      <title>Activities And Amenities</title>
       <meta name="keywords" content="">
       <meta name="description" content="">
       <meta name="author" content="">
@@ -45,13 +45,13 @@
                        <div class="collapse navbar-collapse" id="navbarNav">
                            <ul class="navbar-nav">
                                <li class="nav-item">
-                                   <a class="nav-link" href="index.html">Home</a>
+                                   <a class="nav-link" href="/">Home</a>
                                </li>
                                <li class="nav-item">
                                    <a class="nav-link" href="about.html">About</a>
                                </li>
                                <li class="nav-item">
-                                   <a class="nav-link" href="services.html">Services</a>
+                                   <a class="nav-link" href="ActivitiesAndAmenities.html">Activities And Amenities</a>
                                </li>
                                <li class="nav-item">
                                    <a class="nav-link " href="blog.html">Blog</a>
@@ -67,9 +67,9 @@
                    <div class="logo"><a href="index.html"><img src="static/images/logo.png"></a></div>
                    <div class="menu_main">
                        <ul>
-                           <li class="active"><a href="index.html">Home</a></li>
+                           <li class="active"><a href="/">Home</a></li>
                            <li><a href="about.html">About</a></li>
-                           <li><a href="services.html">Services</a></li>
+                           <li><a href="ActivitiesAndAmenities.html.html">Activities And Amenities</a></li>
                            <li><a href="blog.html">Blog</a></li>
                            <li><a href="contact.html">Contact us</a></li>
                        </ul>
@@ -86,34 +86,24 @@
                <div class="services_section_2">
                    <div class="row">
                        {% for activity in activities %}
-                       <div class="btn_main"><a href="#" onclick="recordButton('{{ activity }}'); return false;">{{ activity }}</a></div>
+                       <div class="btn_main"><a href="#" onclick="toggleButtonColor(this, '{{ activity }}','activities'); return false;">{{ activity }}</a></div>
+                       {% endfor %}
+                   </div>
+               </div>
+               <h1 class="services_taital">Amenities</h1>
+               <p class="services_text">Choose the ones that please you</p>
+               <div class="services_section_2">
+                   <div class="row">
+                       {% for amenity in amenities %}
+                       <div class="btn_main"><a href="#" onclick="toggleButtonColor(this, '{{ amenity }}', 'amenities'); return false;">{{ amenity }}</a></div>
                        {% endfor %}
                    </div>
                </div>
            </div>
        </div>
 
-       <div class="services_section layout_padding">
-           <div class="container">
-               <h1 class="services_taital">Amenities</h1>
-               <p class="services_text">Choose the ones that please you</p>
-               <form action="/submit_amenities" method="post">
-                   <div class="services_section_2">
-                       <div class="row">
-                           {% for amenity in amenities %}
-                           <div class="col-md-6">
-                               <div class="form-check">
-                                   <input class="form-check-input" type="checkbox" name="amenities[]" id="{{ amenity }}" value="{{ amenity }}">
-                                   <label class="form-check-label" for="{{ amenity }}">{{ amenity }}</label>
-                               </div>
-                           </div>
-                           {% endfor %}
-                       </div>
-                   </div>
-                   <button type="submit" class="btn btn-primary">Submit</button>
-               </form>
-           </div>
-       </div>
+       <div class="send_btn"><a href="/ActivitiesAndAmenities">Start my wander</a></div>
+
 
 
 
@@ -161,15 +151,8 @@
        <!-- javascript -->
        <script src="static/js/owl.carousel.js"></script>
        <script src="https:cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
-       <script>function recordButton(activity) {
-               // Send an AJAX request to the Flask server to record the button click
-               fetch('/record_button', {
-                   method: 'POST',
-                   body: JSON.stringify({ activity: activity }),
-                   headers: {
-                       'Content-Type': 'application/json'
-                   }
-               });
-           }</script>
+       <script src= "static/js/record_button.js"></script>
+
+
    </body>
 </html>

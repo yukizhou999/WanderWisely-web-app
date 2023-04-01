@@ -467,6 +467,13 @@ button {
     background-color: #000d10;
 }
 
+.btn_main a.active {
+        color: #ffffff;
+        background-color: #000d10;
+ }
+
+
+
 
 /* services section end */
 
@@ -883,10 +890,12 @@ button {
     background-color: #000d10;
     padding: 7px;
 }
-.send_btn a:hover {
+/*.send_btn a:hover {
     color: #ffffff;
     background-color: #2b2278;
 }
+
+*/
 /* contact section end */
 
 

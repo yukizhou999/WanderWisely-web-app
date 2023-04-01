@@ -13,6 +13,17 @@ activities = list(activities["name"].unique())
 amenities = sql_query("select * from wanderwisely.amenity_related_parks", conn)
 amenities = amenities["name"].unique()
 
+# record user's selection
+user_selection = {"activities":[], "amenities":[]}
+
+
+def update_selection(selection, select_type):
+    if selection in user_selection[select_type]:
+        user_selection[select_type].remove(selection)
+    else:
+        user_selection[select_type].append(selection)
+    
+
 app = Flask(__name__)
 
 @app.route('/ActivitiesAndAmenities')
@@ -22,17 +33,16 @@ def ActivitiesAndAmenities():
 @app.route('/record_button', methods=['POST'])
 def record_button():
     data = request.get_json()
-    activity = data['activity']
-    print(activity)
+#    if data["type"] == "activity":
+#        user_selection["activities"].append(data['input'])
+#    else:
+#        user_selection["amenities"].append(data["input"])
+    update_selection(data["input"], data["type"])
+
+    print(user_selection)
+
     # Record the button click in the database or perform any other action
     return '', 204
-
-@app.route('/submit_amenities', methods=['POST'])
-def submit_amenities():
-    selected_amenities = request.form.getlist('amenities[]')
-    # Do something with the selected amenities, such as storing them in a database
-    print(selected_amenities)
-    return 'Selected amenities: ' + ', '.join(selected_amenities)
 
 
 @app.route('/')
