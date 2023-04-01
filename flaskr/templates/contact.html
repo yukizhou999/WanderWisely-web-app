@@ -42,36 +42,17 @@
                   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                   </button>
-                  <div class="collapse navbar-collapse" id="navbarNav">
-                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                           <a class="nav-link" href="index.html">Home</a>
-                        </li>
-                        <li class="nav-item">
-                           <a class="nav-link" href="about.html">About</a>
-                        </li>
-                        <li class="nav-item">
-                           <a class="nav-link" href="services.html">Services</a>
-                        </li>
-                        <li class="nav-item">
-                           <a class="nav-link " href = "https://github.com/BaiyanRen/WanderWisely-web-app">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                           <a class="nav-link " href="contact.html">Contact</a>
-                        </li>
-                     </ul>
-                  </div>
                </nav>
             </div>
             <div class="container-fluid">
                <div class="logo"><a href="index.html"><img src="static/images/logo.png"></a></div>
                <div class="menu_main">
                   <ul>
-                     <li class="active"><a href="index.html">Home</a></li>
+                     <li class="active"><a href="/">Home</a></li>
                      <li><a href="about.html">About</a></li>
-                     <li><a href="services.html">Services</a></li>
+                     <li><a href="{{url_for('ActivitiesAndAmenities')}}">Services</a></li>
                      <li><a href = "https://github.com/BaiyanRen/WanderWisely-web-app">Github</a></li>
-                     <li><a href="contact.html">Contact us</a></li>
+                     <li><a href="{{url_for('contact')}}">Contact us</a></li>
                   </ul>
                </div>
             </div>
