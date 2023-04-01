@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 import pandas as pd
 import helper_functions as uf
 
-# from score_algo import algo
 
 # build database connection
 
@@ -43,12 +42,12 @@ def record_button():
     return '', 204
 
 
-<<<<<<< HEAD
+
 @app.route('/parks')
 def parks():
     top_three_parks = algo(user_selection)
     return render_template('parks.html',parks = top_three_parks)
-=======
+
 def generate_places(parkCode, activities):
     # todo modify sql query
     parks_df = uf.import_data("select * from wanderwisely.activity_related_parks", conn)
@@ -67,7 +66,7 @@ def poi():
     parkName, places = generate_places('acad', ['Biking', 'Hiking'])
     return render_template('poi.html', parkName=parkName, places=places)
 
->>>>>>> 66c7de7ae41902feaed0ccdced0440f90e48c9f7
+
 
 @app.route('/')
 def home():
