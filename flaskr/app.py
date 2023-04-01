@@ -9,7 +9,7 @@ conn, engine = conn_to_db()
 
 # get Activities and Amenities
 activities = sql_query("select * from wanderwisely.activity_related_parks", conn)
-activities = list(activities["name"].unique())
+activities = activities["name"].unique()
 amenities = sql_query("select * from wanderwisely.amenity_related_parks", conn)
 amenities = amenities["name"].unique()
 
