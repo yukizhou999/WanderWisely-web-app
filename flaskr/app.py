@@ -36,7 +36,6 @@ def ActivitiesAndAmenities():
 def record_button():
     data = request.get_json()
     update_selection(data["input"], data["type"])
-    print(user_selection)
     # Record the button click in the database or perform any other action
 
     return '', 204
