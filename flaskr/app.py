@@ -11,6 +11,7 @@ activities = uf.import_data("select * from wanderwisely.activity_related_parks",
 activities = activities["name"].unique()
 amenities = uf.import_data("select * from wanderwisely.amenity_related_parks", conn)
 amenities = amenities["name"].unique()
+parks_df = uf.import_data(f"select * from wanderwisely.activity_related_parks", conn)
 
 # record user's selection
 user_selection = {"activities": [], "amenities": [], "pois": []}
@@ -40,21 +41,19 @@ def record_button():
     return '', 204
 
 
-def generate_places(parkCode, activities):
-    # todo modify sql query
-    parks_df = uf.import_data("select * from wanderwisely.activity_related_parks", conn)
-    parkName = parks_df[parks_df['parkCode'] == parkCode]['parkName'][0]
-    places_df = uf.import_data("select * from wanderwisely.things_to_do_places", conn)
-    filtered_places_df = places_df[
-        (places_df['parkCode'] == parkCode) & (places_df['activity_name'].isin(activities))].copy()
-    filtered_places = filtered_places_df['thing_title'].to_list()
+def generate_places(parkName, activities):
+    parkCode = parks_df[parks_df['parkName'] == parkName]['parkCode'][0]
+    query = f"select thing_title from wanderwisely.things_to_do_places where parkCode = '{parkCode}' and activity_name in ('{activities}')"
+    places_df = uf.import_data(query, conn)
+    filtered_places = places_df['thing_title'].to_list()
     return parkName, filtered_places
 
 
 @app.route('/poi')
 def poi():
+    parkName = user_selection['parkName']
     activities = user_selection['activities']
-    # parkName, places = generate_places('acad', activities)
+    # parkName, places = generate_places(parkName, activities)
     parkName, places = generate_places('acad', ['Biking', 'Hiking'])
     return render_template('poi.html', parkName=parkName, places=places)
 
@@ -71,3 +70,5 @@ def contact():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
