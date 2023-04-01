@@ -33,14 +33,7 @@ def ActivitiesAndAmenities():
 @app.route('/record_button', methods=['POST'])
 def record_button():
     data = request.get_json()
-#    if data["type"] == "activity":
-#        user_selection["activities"].append(data['input'])
-#    else:
-#        user_selection["amenities"].append(data["input"])
     update_selection(data["input"], data["type"])
-
-    print(user_selection)
-
     # Record the button click in the database or perform any other action
     return '', 204
 
