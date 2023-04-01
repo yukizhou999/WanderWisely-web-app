@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import pandas as pd
 from database import conn_to_db, sql_query
 
+# from score_algo import algo
+
 # build database connection
 
 conn, engine = conn_to_db()
@@ -35,8 +37,14 @@ def record_button():
     data = request.get_json()
     update_selection(data["input"], data["type"])
     # Record the button click in the database or perform any other action
+
     return '', 204
 
+
+@app.route('/parks')
+def parks():
+    top_three_parks = algo(user_selection)
+    return render_template('parks.html',parks = top_three_parks)
 
 @app.route('/')
 def home():
