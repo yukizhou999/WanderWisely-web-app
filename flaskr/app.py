@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 import helper_functions as uf
 
+
 # build database connection
 
 conn, engine = uf.conn_to_db()
@@ -11,8 +12,8 @@ activities = uf.import_data("select * from wanderwisely.activity_related_parks",
 activities = activities["name"].unique()
 amenities = uf.import_data("select * from wanderwisely.amenity_related_parks", conn)
 amenities = amenities["name"].unique()
+# load data to map parkCode to parkName
 parks_df = uf.import_data(f"select * from wanderwisely.activity_related_parks", conn)
-
 # record user's selection
 user_selection = {"activities": [], "amenities": [], "pois": []}
 
@@ -36,9 +37,15 @@ def ActivitiesAndAmenities():
 def record_button():
     data = request.get_json()
     update_selection(data["input"], data["type"])
-    print(user_selection)
     # Record the button click in the database or perform any other action
+
     return '', 204
+
+
+@app.route('/parks')
+def parks():
+    top_three_parks = algo(user_selection)
+    return render_template('parks.html',parks = top_three_parks)
 
 
 def generate_places(parkName, activities):
@@ -58,6 +65,7 @@ def poi():
     return render_template('poi.html', parkName=parkName, places=places)
 
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -70,5 +78,8 @@ def contact():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
 
 
